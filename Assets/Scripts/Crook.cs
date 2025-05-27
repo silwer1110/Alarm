@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Transform))]
-public class Julic : MonoBehaviour
+public class Crook : MonoBehaviour
 {
     [SerializeField] private Mover _mover;
     [SerializeField] private Transform[] _waypoints;
