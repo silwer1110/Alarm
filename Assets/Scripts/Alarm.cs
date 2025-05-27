@@ -1,37 +1,42 @@
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider), typeof(AudioSource))]
 public class Alarm : MonoBehaviour
 {
     [SerializeField] private AudioSource _audioSource;
-    [SerializeField] private RayCaster _rayCaster;
     [SerializeField] private float _increaseSpeed = 0.1f;
 
     private Coroutine _coroutine;
-    private const float MaxVolume = 1f;
-    private const float MinVolume = 0f;
+    private int _crooksCount = 0;
+    private float MaxVolume = 1f;
+    private float MinVolume = 0f;
 
     private void Awake()
     {
-        _audioSource = GetComponent<AudioSource>();
+        _audioSource = GetComponent<AudioSource>();       
     }
 
-    private void OnEnable()
+    private void OnTriggerEnter()
     {
-        _rayCaster.OnRay += HandleAlarm;
+        _crooksCount++;
+
+        HandleAlarm();
     }
 
-    private void OnDisable()
+    private void OnTriggerExit()
     {
-        _rayCaster.OnRay -= HandleAlarm;
+        _crooksCount--;
+
+        HandleAlarm();
     }
 
-    private void HandleAlarm(bool objectIn)
+    private void HandleAlarm()
     {
         if (_coroutine != null)
             StopCoroutine(_coroutine);
 
-        if (objectIn)
+        if (_crooksCount > 0)
         {
             _audioSource.Play();
             _coroutine = StartCoroutine(FadeVolumeTo(MaxVolume));
