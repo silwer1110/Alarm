@@ -3,10 +3,29 @@ using UnityEngine;
 
 public class Mover : MonoBehaviour
 {
+    [SerializeField] private Transform[] _waypoints;
     [SerializeField] private float _speed = 3f;
     [SerializeField] private float _rotateSpeed = 1f;
 
-    public IEnumerator MoveTo(Vector3 target)
+    public void StartMoving()
+    {
+        StartCoroutine(PatrolRoutine());
+    }
+
+    private IEnumerator PatrolRoutine()
+    {
+        Vector3 target;
+
+        for (int i = 0; i < _waypoints.Length; i++)
+        {
+            target = _waypoints[i].position;
+
+            yield return MoveTo(target);
+            yield return Rotate(target);
+        }
+    }
+
+    private IEnumerator MoveTo(Vector3 target)
     {
         float distanceBetweenPoints = 0.1f;
 
@@ -20,7 +39,7 @@ public class Mover : MonoBehaviour
         transform.position = target;
     }
 
-    public IEnumerator Rotate(Vector3 target)
+    private IEnumerator Rotate(Vector3 target)
     {
         Quaternion targetRotation = Quaternion.LookRotation(target - transform.position);
 
