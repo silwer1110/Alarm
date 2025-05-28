@@ -8,43 +8,29 @@ public class Alarm : MonoBehaviour
     [SerializeField] private float _increaseSpeed = 0.1f;
 
     private Coroutine _coroutine;
-    private int _crooksCount = 0;
-    private float MaxVolume = 1f;
-    private float MinVolume = 0f;
+    private float _maxVolume = 1f;
+    private float _minVolume = 0f;
 
     private void Awake()
     {
-        _audioSource = GetComponent<AudioSource>();       
+        _audioSource = GetComponent<AudioSource>();
     }
 
-    private void OnTriggerEnter()
-    {
-        _crooksCount++;
-
-        HandleAlarm();
-    }
-
-    private void OnTriggerExit()
-    {
-        _crooksCount--;
-
-        HandleAlarm();
-    }
-
-    private void HandleAlarm()
+    public void DownVolume()
     {
         if (_coroutine != null)
             StopCoroutine(_coroutine);
 
-        if (_crooksCount > 0)
-        {
+        _coroutine = StartCoroutine(FadeVolumeTo(_minVolume));
+    }
+
+    public void RiseVolum()
+    {
+        if (_coroutine != null)
+            StopCoroutine(_coroutine);
+
             _audioSource.Play();
-            _coroutine = StartCoroutine(FadeVolumeTo(MaxVolume));
-        }
-        else
-        {
-            _coroutine = StartCoroutine(FadeVolumeTo(MinVolume));
-        }
+            _coroutine = StartCoroutine(FadeVolumeTo(_maxVolume));
     }
 
     private IEnumerator FadeVolumeTo(float targetVolume)
@@ -56,7 +42,7 @@ public class Alarm : MonoBehaviour
             yield return null;
         }
 
-        if (Mathf.Approximately(targetVolume, MinVolume))
+        if (Mathf.Approximately(targetVolume, _minVolume))
             _audioSource.Stop();
     }
 }
